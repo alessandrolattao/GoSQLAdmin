@@ -1,0 +1,39 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-server
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: gomyadmin
+      MYSQL_DATABASE: gomyadmin
+      MYSQL_USER: gomyadmin
+      MYSQL_PASSWORD: gomyadmin
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - gomyadmin
+
+  gomyadmin:
+    build:
+      context: docker
+    container_name: gomyadmin
+    ports:
+      - "8080:8080"
+    environment:
+      LOG_LEVEL: debug
+      MYSQL_HOST: mysql
+      MYSQL_ROOT_PASSWORD: gomyadmin
+      MYSQL_USER: gomyadmin
+      MYSQL_PASSWORD: gomyadmin
+    volumes:
+      - .:/app
+    networks:
+      - gomyadmin
+
+volumes:
+  mysql_data:
+
+networks:
+  gomyadmin:
+    driver: bridge
