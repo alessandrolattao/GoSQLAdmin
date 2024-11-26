@@ -3,23 +3,44 @@ package server
 import (
 	"net/http"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/rs/zerolog"
 )
 
+// Server represents the Echo server instance.
 type Server struct {
 	Echo *echo.Echo
 }
 
-func NewServer() *Server {
+// NewServer initializes a new Echo server and sets up routes, middleware, and custom logging.
+func NewServer(logger zerolog.Logger, db *sqlx.DB) *Server {
+
+	// Create a new Echo instance
 	e := echo.New()
 
-	// Middleware di logging (opzionale)
-	e.Use(middleware.Logger())
+	// Add RequestLogger middleware to log request details
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogURI:    true,
+		LogStatus: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			logger.Info().
+				Str("URI", v.URI).
+				Int("status", v.Status).
+				Str("method", c.Request().Method).
+				Msg("Handled request")
+			return nil
+		},
+	}))
+
+	// Add recovery middleware
 	e.Use(middleware.Recover())
 
-	e.Renderer = NewTemplateRenderer()
+	// Set the custom template renderer
+	e.Renderer = NewTemplateRenderer(logger)
 
+	// Define routes
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "base.html", map[string]interface{}{
 			"Title": "GoMyAdmin",
@@ -32,13 +53,23 @@ func NewServer() *Server {
 		})
 	})
 
-	e.POST("/tables", func(c echo.Context) error {
-		// Array di stringhe
-		menuItems := []string{"Home", "About Us", "Services", "Contact"}
+	e.POST("/databases", func(c echo.Context) error {
+		// Array of database items
+		databaseItems := []string{"Database1", "Database2", "Database3"}
 
-		// Renderizza il template con i dati
+		// Render the template with data
+		return c.Render(http.StatusOK, "databases.html", map[string]interface{}{
+			"DatabaseItems": databaseItems,
+		})
+	})
+
+	e.POST("/tables", func(c echo.Context) error {
+		// Array of table items
+		tableItems := []string{"Table1", "Table2", "Table3"}
+
+		// Render the template with data
 		return c.Render(http.StatusOK, "tables.html", map[string]interface{}{
-			"MenuItems": menuItems,
+			"TableItems": tableItems,
 		})
 	})
 
@@ -52,11 +83,14 @@ func NewServer() *Server {
 		})
 	})
 
+	// Serve static files from the "web/static" directory
 	e.Static("/static", "web/static")
 
 	return &Server{Echo: e}
 }
 
+// Start launches the Echo server on the specified port.
+// Logs an error if the server fails to start.
 func (s *Server) Start(port string) error {
 	return s.Echo.Start(":" + port)
 }
