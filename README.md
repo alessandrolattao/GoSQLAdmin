@@ -30,3 +30,12 @@ Follow this repository for updates as development progresses. Exciting features 
 If you wish to contribute, feel free to open issues or submit pull requests. Your ideas and efforts can help shape GoMyAdmin into a great tool for developers.
 
 ---
+
+### Resources:
+https://go.dev/
+https://htmx.org/
+https://daisyui.com/
+https://docs.docker.com/
+https://docs.docker.com/compose/
+
+---
