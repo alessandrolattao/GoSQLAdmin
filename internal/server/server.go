@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/alessandrolattao/gomyadmin/internal/database"
@@ -76,9 +77,12 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 			return err
 		}
 
+		fmt.Println(selectedDatabase)
+
 		// Render the template with data
 		return c.Render(http.StatusOK, "tables.html", map[string]interface{}{
-			"TableItems": tableItems,
+			"SelectedDatabase": selectedDatabase,
+			"TableItems":       tableItems,
 		})
 	})
 

@@ -4,7 +4,7 @@
     <li>
       <a
         href="#"
-        hx-post="/table/{{. | urlquery}}"
+        hx-post="/table/{{$.SelectedDatabase}}/{{. | urlquery}}"
         hx-target="#content"
         hx-swap="innerHTML"
         title="{{.}}"
