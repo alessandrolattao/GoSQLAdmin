@@ -86,13 +86,45 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 		})
 	})
 
-	e.POST("/table/:tablename", func(c echo.Context) error {
+	e.POST("/table/:databasename/:tablename", func(c echo.Context) error {
 		// Get the dynamic part of the URL
+		databaseName := c.Param("databasename")
 		tableName := c.Param("tablename")
 
 		return c.Render(http.StatusOK, "table.html", map[string]interface{}{
-			"Title":     "Table",
-			"TableName": tableName,
+			"Title":        "Table",
+			"DatabaseName": databaseName,
+			"TableName":    tableName,
+		})
+	})
+
+	e.POST("/data/:databasename/:tablename", func(c echo.Context) error {
+		// Get the dynamic part of the URL
+		databaseName := c.Param("databasename")
+		tableName := c.Param("tablename")
+
+		db.SelectDatabase(logger, databaseName)
+
+		columnNames, err := db.GetColumnNames(logger, tableName)
+		if err != nil {
+			logger.Error().Err(err).Msg("Error fetching column names")
+			return err
+		}
+
+		data, err := db.PaginatedTableData(logger, tableName, 1, 10)
+		if err != nil {
+			logger.Error().Err(err).Msg("Error fetching table data")
+			return err
+		}
+
+		return c.Render(http.StatusOK, "data.html", map[string]interface{}{
+			"DatabaseName": databaseName,
+			"TableName":    tableName,
+			"ColumnNames":  columnNames,
+			"Data":         data,
+			"PageSize":     10,
+			"CurrentPage":  1,
+			"TotalPages":   1,
 		})
 	})
 
