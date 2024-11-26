@@ -1,0 +1,71 @@
+<div class="overflow-auto">
+  <table class="table table-xs table-zebra w-full">
+    <thead>
+      <tr class="bg-primary text-black">
+        {{range .ColumnNames}}
+        <th>{{.}}</th>
+        {{end}}
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Data}}
+      <tr>
+        {{range $key, $value := .}}
+        <td>{{ $value }}</td>
+        {{end}}
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+
+<div class="flex justify-between items-center mt-4">
+  <div class="flex items-center gap-2">
+    <label for="pageSize" class="label">
+      <span class="label-text">Rows per page:</span>
+    </label>
+    <select
+      id="pageSize"
+      class="select select-sm select-bordered"
+      name="pageSize"
+      hx-vals='{"page": "{{.Page}}"}'
+      hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
+      hx-target="#data-table"
+      hx-swap="innerHTML"
+    >
+      <option value="5" {{if eq .PageSize 5}}selected{{end}}>5</option>
+      <option value="10" {{if eq .PageSize 10}}selected{{end}}>10</option>
+      <option value="20" {{if eq .PageSize 20}}selected{{end}}>20</option>
+      <option value="50" {{if eq .PageSize 50}}selected{{end}}>50</option>
+    </select>
+  </div>
+
+  <div class="btn-group">
+    <button
+      class="btn btn-sm btn-outline"
+      hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
+      hx-vals='{"page": "{{subtract .Page 1}}", "pageSize": "{{.PageSize}}"}'
+      hx-target="#data-table"
+      hx-swap="innerHTML"
+      {{if
+      le
+      .Page
+      1}}disabled{{end}}
+    >
+      Previous
+    </button>
+    <button
+      class="btn btn-sm btn-outline"
+      hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
+      hx-vals='{"page": "{{add .Page 1}}", "pageSize": "{{.PageSize}}"}'
+      hx-target="#data-table"
+      hx-swap="innerHTML"
+      {{if
+      ge
+      .Page
+      .TotalPages}}disabled{{end}}
+    >
+      Next
+    </button>
+  </div>
+</div>

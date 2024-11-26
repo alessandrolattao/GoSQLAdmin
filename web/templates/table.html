@@ -50,6 +50,7 @@ SELECT * FROM {{.TableName}};</textarea
 </div>
 
 <div
+  id="data-table"
   hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
   hx-trigger="load"
   class="py-8"
