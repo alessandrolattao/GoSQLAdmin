@@ -15,7 +15,15 @@ func NewDB(logger zerolog.Logger, env *environment.Environment) (*sqlx.DB, error
 
 	// Construct DSN
 	var dsn string
-	dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/?timeout=%s&readTimeout=%s&writeTimeout=%s", env.MySQLUser, env.MySQLPassword, env.MySQLHost, env.MySQLPort, env.MySQLConnTimeout, env.MySQLReadTimeout, env.MySQLWriteTimeout)
+	dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/?timeout=%s&readTimeout=%s&writeTimeout=%s",
+		env.MySQLUser,
+		env.MySQLPassword,
+		env.MySQLHost,
+		env.MySQLPort,
+		env.MySQLConnTimeout.String(),  // Convert time.Duration to string
+		env.MySQLReadTimeout.String(),  // Convert time.Duration to string
+		env.MySQLWriteTimeout.String(), // Convert time.Duration to string
+	)
 
 	logger.Info().Msg("Connecting to the database")
 
