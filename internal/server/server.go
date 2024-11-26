@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/alessandrolattao/gomyadmin/internal/database"
 	"github.com/labstack/echo/v4"
@@ -99,11 +100,18 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 	})
 
 	e.POST("/data/:databasename/:tablename", func(c echo.Context) error {
-		// Get the dynamic part of the URL
 		databaseName := c.Param("databasename")
 		tableName := c.Param("tablename")
+		page := getIntFormValue(c, "page", 1)
+		pageSize := getIntFormValue(c, "pageSize", 10)
 
 		db.SelectDatabase(logger, databaseName)
+
+		totalPages, err := db.TotalPages(logger, databaseName, tableName, pageSize)
+		if err != nil {
+			logger.Error().Err(err).Msg("Error fetching column names")
+			return err
+		}
 
 		columnNames, err := db.GetColumnNames(logger, tableName)
 		if err != nil {
@@ -111,7 +119,7 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 			return err
 		}
 
-		data, err := db.PaginatedTableData(logger, tableName, 1, 10)
+		data, err := db.PaginatedTableData(logger, tableName, page, pageSize)
 		if err != nil {
 			logger.Error().Err(err).Msg("Error fetching table data")
 			return err
@@ -122,9 +130,9 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 			"TableName":    tableName,
 			"ColumnNames":  columnNames,
 			"Data":         data,
-			"PageSize":     10,
-			"CurrentPage":  1,
-			"TotalPages":   1,
+			"Page":         page,
+			"PageSize":     pageSize,
+			"TotalPages":   totalPages,
 		})
 	})
 
@@ -138,4 +146,16 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 // Logs an error if the server fails to start.
 func (s *Server) Start(port string) error {
 	return s.Echo.Start(":" + port)
+}
+
+func getIntFormValue(c echo.Context, name string, defaultValue int) int {
+	value := c.FormValue(name)
+	if value == "" {
+		return defaultValue
+	}
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		return defaultValue
+	}
+	return intValue
 }
