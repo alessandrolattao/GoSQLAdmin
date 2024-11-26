@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/jmoiron/sqlx"
+	"github.com/alessandrolattao/gomyadmin/internal/database"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
@@ -15,7 +15,7 @@ type Server struct {
 }
 
 // NewServer initializes a new Echo server and sets up routes, middleware, and custom logging.
-func NewServer(logger zerolog.Logger, db *sqlx.DB) *Server {
+func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 
 	// Create a new Echo instance
 	e := echo.New()
@@ -55,7 +55,11 @@ func NewServer(logger zerolog.Logger, db *sqlx.DB) *Server {
 
 	e.POST("/databases", func(c echo.Context) error {
 		// Array of database items
-		databaseItems := []string{"Database1", "Database2", "Database3"}
+		databaseItems, err := db.ListDatabases(logger)
+		if err != nil {
+			logger.Error().Err(err).Msg("Error fetching list of databases")
+			return err
+		}
 
 		// Render the template with data
 		return c.Render(http.StatusOK, "databases.html", map[string]interface{}{
@@ -64,8 +68,13 @@ func NewServer(logger zerolog.Logger, db *sqlx.DB) *Server {
 	})
 
 	e.POST("/tables", func(c echo.Context) error {
-		// Array of table items
-		tableItems := []string{"Table1", "Table2", "Table3"}
+		selectedDatabase := c.FormValue("selectedDatabase")
+
+		tableItems, err := db.ListTables(logger, selectedDatabase)
+		if err != nil {
+			logger.Error().Err(err).Msg("Error fetching list of tables")
+			return err
+		}
 
 		// Render the template with data
 		return c.Render(http.StatusOK, "tables.html", map[string]interface{}{

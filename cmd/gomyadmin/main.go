@@ -57,7 +57,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to the database")
 	}
-	defer db.Close()
+	defer db.Conn.Close()
 
 	// Initialize the server with the logger and database connection
 	srv := server.NewServer(log.Logger, db)

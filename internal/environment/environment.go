@@ -84,7 +84,7 @@ func GetEnvironment(logger zerolog.Logger) (*Environment, error) {
 
 	// Fetch and validate optional environment variables with defaults
 	env.MySQLPort = getEnvOrDefault("MYSQL_PORT", "3306")
-	env.MySQLConnTimeout = parseDurationEnvOrDefault("MYSQL_CONN_TIMEOUT", 30*time.Second)
+	env.MySQLConnTimeout = parseDurationEnvOrDefault("MYSQL_CONN_TIMEOUT", 60*time.Second)
 	env.MySQLReadTimeout = parseDurationEnvOrDefault("MYSQL_READ_TIMEOUT", 30*time.Minute)
 	env.MySQLWriteTimeout = parseDurationEnvOrDefault("MYSQL_WRITE_TIMEOUT", 30*time.Minute)
 

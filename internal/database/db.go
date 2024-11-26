@@ -10,8 +10,12 @@ import (
 	_ "github.com/go-sql-driver/mysql" // MySQL driver
 )
 
+type DB struct {
+	Conn *sqlx.DB
+}
+
 // NewDB creates a new database connection
-func NewDB(logger zerolog.Logger, env *environment.Environment) (*sqlx.DB, error) {
+func NewDB(logger zerolog.Logger, env *environment.Environment) (*DB, error) {
 
 	// Construct DSN
 	var dsn string
@@ -40,5 +44,5 @@ func NewDB(logger zerolog.Logger, env *environment.Environment) (*sqlx.DB, error
 	db.SetConnMaxLifetime(env.ConnMaxLifetime)
 
 	logger.Info().Msg("Successfully connected to the database")
-	return db, nil
+	return &DB{Conn: db}, nil
 }
