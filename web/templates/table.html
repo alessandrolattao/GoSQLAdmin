@@ -1,6 +1,6 @@
 <div class="breadcrumbs text-sm pb-6">
   <ul>
-    <li>Tables</li>
+    <li>{{.DatabaseName}}</li>
     <li>{{.TableName}}</li>
   </ul>
 </div>
@@ -10,7 +10,9 @@
     id="sql-input"
     class="textarea textarea-primary w-full h-64 font-mono"
     placeholder="Query"
-  ></textarea>
+  >
+SELECT * FROM {{.TableName}};</textarea
+  >
   <button class="btn btn-primary">
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -47,11 +49,11 @@
   </button>
 </div>
 
-<div class="p-4">
-  <p>Content for the active tab goes here.</p>
-  <h1>{{.Title}}</h1>
-  <p>{{.TableName}}</p>
-</div>
+<div
+  hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
+  hx-trigger="load"
+  class="py-8"
+></div>
 
 <!-- Toast Notification -->
 <div id="toast-error" class="toast toast-end hidden">
