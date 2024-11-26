@@ -22,7 +22,7 @@
           <img src="/static/images/logo.png" clas="inline-block max-w-full" />
         </div>
         <div class="divider">GoMyAdmin</div>
-        <ul class="menu p-4">
+        <ul class="menu px-4">
           <li>
             <a
               href="#"
@@ -48,7 +48,9 @@
             </a>
           </li>
         </ul>
-        <div class="divider">Tables</div>
+        <div class="divider">Databases</div>
+        <div hx-post="/databases" hx-trigger="load"></div>
+        <div class="divider">Tables and Views</div>
         <div hx-post="/tables" hx-trigger="load"></div>
       </div>
 
