@@ -1,6 +1,12 @@
 <div class="px-4">
-  <select class="select w-full max-w-xs">
-    {{range .DatabaseItems}}
+  <select
+    class="select w-full max-w-xs"
+    name="selectedDatabase"
+    hx-post="/tables"
+    hx-target="#tables"
+    hx-trigger="load,change"
+  >
+    > {{range .DatabaseItems}}
     <option>{{.}}</option>
     {{end}}
   </select>

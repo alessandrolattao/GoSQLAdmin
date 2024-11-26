@@ -17,7 +17,9 @@
   <body>
     <div class="flex h-screen overflow-hidden">
       <!-- Sidebar -->
-      <div class="w-64 shadow-lg bg-base-300">
+      <div
+        class="w-80 shadow-lg bg-base-300 overflow-y-scroll overflow-x-hidden"
+      >
         <div class="p-6 text-center">
           <img src="/static/images/logo.png" clas="inline-block max-w-full" />
         </div>
@@ -51,7 +53,7 @@
         <div class="divider">Databases</div>
         <div hx-post="/databases" hx-trigger="load"></div>
         <div class="divider">Tables and Views</div>
-        <div hx-post="/tables" hx-trigger="load"></div>
+        <div id="tables"></div>
       </div>
 
       <!-- Main Content -->
