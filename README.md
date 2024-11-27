@@ -73,9 +73,13 @@ If you wish to contribute, feel free to open issues or submit pull requests. You
 
 ### Resources:
 https://go.dev/
+
 https://htmx.org/
+
 https://daisyui.com/
+
 https://docs.docker.com/
+
 https://docs.docker.com/compose/
 
 ---
