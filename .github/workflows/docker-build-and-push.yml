@@ -29,5 +29,5 @@ jobs:
       # Push the Docker image to Docker Hub
       - name: Push Docker image
         run: |
-          docker push alessandrolattao/gomyadmin:latest
           docker push alessandrolattao/gomyadmin:${{ github.event.release.tag_name }}
+          docker push alessandrolattao/gomyadmin:latest
