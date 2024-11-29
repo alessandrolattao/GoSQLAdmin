@@ -53,7 +53,7 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to get environment variables")
 	}
 
-	db, err := database.NewDB(log.Logger, env)
+	db, err := database.NewConnection(log.Logger, env)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to the database")
 	}

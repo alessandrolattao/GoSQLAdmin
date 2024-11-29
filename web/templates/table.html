@@ -1,19 +1,18 @@
-<div class="breadcrumbs text-sm pb-6">
-  <ul>
-    <li>{{.DatabaseName}}</li>
-    <li>{{.TableName}}</li>
-  </ul>
-</div>
-
 <div class="space-y-2 space-x-2 w-full mx-auto">
   <textarea
-    id="sql-input"
+    id="query"
+    name="query"
     class="textarea textarea-primary w-full h-64 font-mono"
     placeholder="Query"
   >
 SELECT * FROM {{.TableName}};</textarea
   >
-  <button class="btn btn-primary">
+  <button
+    class="btn btn-primary"
+    hx-post="/query/{{.DatabaseName}}"
+    hx-include="#query"
+    hx-target="#data-table"
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
@@ -51,7 +50,8 @@ SELECT * FROM {{.TableName}};</textarea
 
 <div
   id="data-table"
-  hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
+  hx-post="/query/{{.DatabaseName}}"
+  hx-include="#query"
   hx-trigger="load"
   class="py-8"
 ></div>
@@ -83,7 +83,7 @@ SELECT * FROM {{.TableName}};</textarea
 <!-- SQL Formatter -->
 <script>
   function formatSQL() {
-    const textarea = document.getElementById("sql-input");
+    const textarea = document.getElementById("query");
     const toastError = document.getElementById("toast-error");
     const toastMessage = document.getElementById("toast-message");
     const input = textarea.value.trim(); // Get and trim the input

@@ -29,7 +29,8 @@
       class="select select-sm select-bordered"
       name="pageSize"
       hx-vals='{"page": "{{.Page}}"}'
-      hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
+      hx-include="#query"
+      hx-post="/query/{{.DatabaseName}}"
       hx-target="#data-table"
       hx-swap="innerHTML"
     >
@@ -43,8 +44,9 @@
   <div class="btn-group">
     <button
       class="btn btn-sm btn-outline"
-      hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
+      hx-post="/query/{{.DatabaseName}}"
       hx-vals='{"page": "{{subtract .Page 1}}", "pageSize": "{{.PageSize}}"}'
+      hx-include="#query"
       hx-target="#data-table"
       hx-swap="innerHTML"
       {{if
@@ -56,8 +58,9 @@
     </button>
     <button
       class="btn btn-sm btn-outline"
-      hx-post="/data/{{.DatabaseName}}/{{.TableName}}"
-      hx-vals='{"page": "{{add .Page 1}}", "pageSize": "{{.PageSize}}"}'
+      hx-post="/query/{{.DatabaseName}}"
+      hx-vals='{"page": "{{add .Page 1}}", "pageSize": "{{.PageSize}}" }'
+      hx-include="#query"
       hx-target="#data-table"
       hx-swap="innerHTML"
       {{if

@@ -1,8 +1,6 @@
 package server
 
 import (
-	"fmt"
-	"net/http"
 	"strconv"
 
 	"github.com/alessandrolattao/gomyadmin/internal/database"
@@ -42,102 +40,8 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 	// Set the custom template renderer
 	e.Renderer = NewTemplateRenderer(logger)
 
-	// Define routes
-	e.GET("/", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "base.html", map[string]interface{}{
-			"Title": "GoMyAdmin",
-		})
-	})
-
-	e.POST("/dashboard", func(c echo.Context) error {
-		return c.Render(http.StatusOK, "dashboard.html", map[string]interface{}{
-			"Title": "Dashboard",
-		})
-	})
-
-	e.POST("/databases", func(c echo.Context) error {
-		// Array of database items
-		databaseItems, err := db.ListDatabases(logger)
-		if err != nil {
-			logger.Error().Err(err).Msg("Error fetching list of databases")
-			return err
-		}
-
-		// Render the template with data
-		return c.Render(http.StatusOK, "databases.html", map[string]interface{}{
-			"DatabaseItems": databaseItems,
-		})
-	})
-
-	e.POST("/tables", func(c echo.Context) error {
-		selectedDatabase := c.FormValue("selectedDatabase")
-
-		tableItems, err := db.ListTables(logger, selectedDatabase)
-		if err != nil {
-			logger.Error().Err(err).Msg("Error fetching list of tables")
-			return err
-		}
-
-		fmt.Println(selectedDatabase)
-
-		// Render the template with data
-		return c.Render(http.StatusOK, "tables.html", map[string]interface{}{
-			"SelectedDatabase": selectedDatabase,
-			"TableItems":       tableItems,
-		})
-	})
-
-	e.POST("/table/:databasename/:tablename", func(c echo.Context) error {
-		// Get the dynamic part of the URL
-		databaseName := c.Param("databasename")
-		tableName := c.Param("tablename")
-
-		return c.Render(http.StatusOK, "table.html", map[string]interface{}{
-			"Title":        "Table",
-			"DatabaseName": databaseName,
-			"TableName":    tableName,
-		})
-	})
-
-	e.POST("/data/:databasename/:tablename", func(c echo.Context) error {
-		databaseName := c.Param("databasename")
-		tableName := c.Param("tablename")
-		page := getIntFormValue(c, "page", 1)
-		pageSize := getIntFormValue(c, "pageSize", 10)
-
-		db.SelectDatabase(logger, databaseName)
-
-		totalPages, err := db.TotalPages(logger, databaseName, tableName, pageSize)
-		if err != nil {
-			logger.Error().Err(err).Msg("Error fetching column names")
-			return err
-		}
-
-		columnNames, err := db.GetColumnNames(logger, tableName)
-		if err != nil {
-			logger.Error().Err(err).Msg("Error fetching column names")
-			return err
-		}
-
-		data, err := db.PaginatedTableData(logger, tableName, page, pageSize)
-		if err != nil {
-			logger.Error().Err(err).Msg("Error fetching table data")
-			return err
-		}
-
-		return c.Render(http.StatusOK, "data.html", map[string]interface{}{
-			"DatabaseName": databaseName,
-			"TableName":    tableName,
-			"ColumnNames":  columnNames,
-			"Data":         data,
-			"Page":         page,
-			"PageSize":     pageSize,
-			"TotalPages":   totalPages,
-		})
-	})
-
-	// Serve static files from the "web/static" directory
-	e.Static("/static", "web/static")
+	// Register routes
+	registerRoutes(e, logger, db)
 
 	return &Server{Echo: e}
 }
@@ -146,6 +50,10 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 // Logs an error if the server fails to start.
 func (s *Server) Start(port string) error {
 	return s.Echo.Start(":" + port)
+}
+
+func getStringFormValue(c echo.Context, name string) string {
+	return c.FormValue(name)
 }
 
 func getIntFormValue(c echo.Context, name string, defaultValue int) int {

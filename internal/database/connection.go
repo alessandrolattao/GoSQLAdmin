@@ -14,8 +14,8 @@ type DB struct {
 	Conn *sqlx.DB
 }
 
-// NewDB creates a new database connection
-func NewDB(logger zerolog.Logger, env *environment.Environment) (*DB, error) {
+// NewConnection creates a new database connection
+func NewConnection(logger zerolog.Logger, env *environment.Environment) (*DB, error) {
 
 	// Construct DSN
 	var dsn string
