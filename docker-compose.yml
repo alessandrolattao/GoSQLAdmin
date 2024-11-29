@@ -13,10 +13,18 @@ services:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     networks:
       - gomyadmin
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
+      interval: 10s
+      timeout: 7s
+      retries: 3
 
   gomyadmin:
     build:
       context: docker
+    depends_on:
+      mysql:
+        condition: service_healthy
     container_name: gomyadmin
     ports:
       - "8080:8080"
