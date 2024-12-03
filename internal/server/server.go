@@ -20,6 +20,9 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 	// Create a new Echo instance
 	e := echo.New()
 
+	// Manage errors without using JSON
+	e.HTTPErrorHandler = CustomHTTPErrorHandler
+
 	// Add RequestLogger middleware to log request details
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:    true,
