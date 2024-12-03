@@ -84,16 +84,10 @@ SELECT * FROM {{.TableName}};</textarea
 <script>
   function formatSQL() {
     const textarea = document.getElementById("query");
-    const toastError = document.getElementById("toast-error");
-    const toastMessage = document.getElementById("toast-message");
     const input = textarea.value.trim(); // Get and trim the input
 
-    // Hide toast by default
-    toastError.classList.add("hidden");
-
     if (!input) {
-      toastMessage.textContent = "Please provide valid SQL to format.";
-      showToast();
+      showErrorToast("Please provide valid SQL to format.");
       return;
     }
 
@@ -104,20 +98,7 @@ SELECT * FROM {{.TableName}};</textarea
       // Update the same textarea with formatted SQL
       textarea.value = formattedSQL;
     } catch (error) {
-      toastMessage.textContent = error.message;
-      showToast();
+      showErrorToast("An error occurred while formatting the SQL:" + error);
     }
-  }
-
-  function showToast() {
-    const toastError = document.getElementById("toast-error");
-
-    // Show the toast
-    toastError.classList.remove("hidden");
-
-    // Hide the toast after 3 seconds
-    setTimeout(() => {
-      toastError.classList.add("hidden");
-    }, 3000);
   }
 </script>

@@ -14,7 +14,7 @@ func DatabasesHandler(logger zerolog.Logger, db *database.DB) echo.HandlerFunc {
 		databaseItems, err := db.ListDatabases(logger)
 		if err != nil {
 			logger.Error().Err(err).Msg("Error fetching list of databases")
-			return err
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		// Render the template with data

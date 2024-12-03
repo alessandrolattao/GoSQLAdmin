@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -8,21 +9,16 @@ import (
 	"github.com/alessandrolattao/gomyadmin/internal/database"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
+	"github.com/xwb1989/sqlparser"
 )
 
 // QueryHandler returns an echo.HandlerFunc to handle queries for a given database.
 func QueryHandler(logger zerolog.Logger, db *database.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// Extract the dynamic part of the URL (database name)
-		databaseName := c.Param("databasename")
-
-		// Extract form values for query, page, and pageSize with defaults
-		query := getStringFormValue(c, "query")
-		page := getIntFormValue(c, "page", 1)
-		pageSize := getIntFormValue(c, "pageSize", 10)
-
-		// Remove any trailing semicolons from the query
-		query = strings.TrimSuffix(query, ";")
+		databaseName, query, page, pageSize, err := extractRequestParameters(c, logger)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
 
 		// Log the data request for debugging purposes
 		logger.Debug().
@@ -32,41 +28,77 @@ func QueryHandler(logger zerolog.Logger, db *database.DB) echo.HandlerFunc {
 			Int("pageSize", pageSize).
 			Msg("Data request")
 
-		// Select the database for the operation
-		db.SelectDatabase(logger, databaseName)
-
-		// Fetch the total number of pages for the query
-		totalPages, err := db.TotalPages(logger, query, pageSize)
+		isSelect, err := isSelect(query)
 		if err != nil {
-			logger.Error().Err(err).Msg("Error fetching total pages")
-			return err
+			logger.Error().Err(err).Msg("Error checking if query is a SELECT statement")
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-
-		// Fetch column names for the query
-		columnNames, err := db.GetColumnNames(logger, query)
-		if err != nil {
-			logger.Error().Err(err).Msg("Error fetching column names")
-			return err
-		}
+		logger.Debug().Bool("isSelect", isSelect).Msg("Checked if query is a SELECT statement")
 
 		// Fetch the data based on the query, page, and pageSize
-		data, err := db.Query(logger, query, page, pageSize)
+		data, columnInfo, affectedRows, err := db.Query(logger, query, isSelect, page, pageSize)
 		if err != nil {
 			logger.Error().Err(err).Msg("Error fetching table data")
-			return err
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+
+		totalPages := 0
+		// Calculate the total number of pages if the query is a SELECT statement
+		if isSelect {
+			totalPages, err = db.TotalPages(logger, query, pageSize)
+			if err != nil {
+				logger.Error().Err(err).Msg("Error calculating total pages")
+				return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+			}
 		}
 
 		// Render the data in the template
 		return c.Render(http.StatusOK, "data.html", map[string]interface{}{
 			"DatabaseName": databaseName,
 			"Query":        query,
-			"ColumnNames":  columnNames,
+			"IsSelect":     isSelect,
+			"AffectedRows": affectedRows,
+			"ColumnInfo":   columnInfo,
 			"Data":         data,
 			"Page":         page,
 			"PageSize":     pageSize,
 			"TotalPages":   totalPages,
 		})
 	}
+}
+
+// extractRequestParameters extracts the database name, query, page, and pageSize from the request.
+func extractRequestParameters(c echo.Context, logger zerolog.Logger) (string, string, int, int, error) {
+	databaseName := c.Param("databasename")
+	query := strings.TrimSuffix(getStringFormValue(c, "query"), ";")
+	page := getIntFormValue(c, "page", 1)
+	pageSize := getIntFormValue(c, "pageSize", 10)
+
+	logger.Debug().
+		Str("databaseName", databaseName).
+		Str("query", query).
+		Int("page", page).
+		Int("pageSize", pageSize).
+		Msg("Extracted request parameters")
+
+	if databaseName == "" || query == "" {
+		return "", "", 0, 0, fmt.Errorf("database name and query must be provided")
+	}
+
+	return databaseName, query, page, pageSize, nil
+}
+
+// isSelect checks if the given SQL query is a SELECT statement.
+func isSelect(query string) (bool, error) {
+	// Parse the query using the sqlparser library
+	stmt, err := sqlparser.Parse(query)
+	if err != nil {
+		return false, fmt.Errorf("failed to parse the query: %v", err)
+	}
+
+	// Check if the parsed statement is of type *sqlparser.Select
+	_, isSelect := stmt.(*sqlparser.Select)
+	return isSelect, nil
 }
 
 // Helper functions for extracting form values (assumed to be defined elsewhere)

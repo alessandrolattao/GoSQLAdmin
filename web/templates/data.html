@@ -1,9 +1,10 @@
+{{ if .IsSelect }}
 <div class="overflow-auto">
   <table class="table table-xs table-zebra w-full">
     <thead>
       <tr class="bg-primary text-black">
-        {{range .ColumnNames}}
-        <th>{{.}}</th>
+        {{range .ColumnInfo}}
+        <th>{{.Name}}</th>
         {{end}}
       </tr>
     </thead>
@@ -71,4 +72,9 @@
       Next
     </button>
   </div>
+</div>
+{{end}}
+
+<div class="mt-8 p-2 flex items-center bg-primary text-black">
+  <span>Affected Rows: {{.AffectedRows}}</span>
 </div>
