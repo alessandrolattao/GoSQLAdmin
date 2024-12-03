@@ -15,18 +15,17 @@ func TablesHandler(logger zerolog.Logger, db *database.DB, driverName string) ec
 		selectedDatabase := c.FormValue("selectedDatabase")
 		if selectedDatabase == "" {
 			logger.Warn().Msg("No database selected")
-			return c.JSON(http.StatusBadRequest, map[string]string{
-				"error": "No database selected",
-			})
+			return echo.NewHTTPError(http.StatusBadRequest, "No database selected")
 		}
+
+		// Select the database
+		db.SelectDatabase(logger, driverName, selectedDatabase)
 
 		// Fetch tables for the selected database
 		tableItems, err := db.ListTables(logger, driverName, selectedDatabase)
 		if err != nil {
 			logger.Error().Err(err).Msg("Error fetching list of tables")
-			return c.JSON(http.StatusInternalServerError, map[string]string{
-				"error": "Unable to fetch tables for the selected database",
-			})
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		// Log successful retrieval of tables
