@@ -1,3 +1,4 @@
+
 services:
   mysql:
     image: mysql:8.0
@@ -30,10 +31,18 @@ services:
       - "8080:8080"
     environment:
       LOG_LEVEL: debug
+      SQL_DRIVER: mysql
       SQL_HOST: mysql
-      SQL_ROOT_PASSWORD: gosqladmin
+      SQL_PORT: 3306
+      SQL_DATABASE: gosqladmin
       SQL_USER: gosqladmin
       SQL_PASSWORD: gosqladmin
+      SQL_CONN_TIMEOUT: 60s
+      SQL_READ_TIMEOUT: 30s
+      SQL_WRITE_TIMEOUT: 30s
+      SQL_MAX_OPEN_CONNS: 10
+      SQL_MAX_IDLE_CONNS: 5
+      SQL_CONN_MAX_LIFETIME: 30m
     volumes:
       - .:/app
     networks:

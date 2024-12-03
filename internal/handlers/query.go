@@ -13,7 +13,7 @@ import (
 )
 
 // QueryHandler returns an echo.HandlerFunc to handle queries for a given database.
-func QueryHandler(logger zerolog.Logger, db *database.DB) echo.HandlerFunc {
+func QueryHandler(logger zerolog.Logger, db *database.DB, driverName string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		databaseName, query, page, pageSize, err := extractRequestParameters(c, logger)
 		if err != nil {
@@ -35,8 +35,8 @@ func QueryHandler(logger zerolog.Logger, db *database.DB) echo.HandlerFunc {
 		}
 		logger.Debug().Bool("isSelect", isSelect).Msg("Checked if query is a SELECT statement")
 
-		// Fetch the data based on the query, page, and pageSize
-		data, columnInfo, affectedRows, err := db.Query(logger, query, isSelect, page, pageSize)
+		// Fetch the data based on the query, page, pageSize, and driver
+		data, columnInfo, affectedRows, err := db.Query(logger, driverName, query, isSelect, page, pageSize)
 		if err != nil {
 			logger.Error().Err(err).Msg("Error fetching table data")
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -101,7 +101,7 @@ func isSelect(query string) (bool, error) {
 	return isSelect, nil
 }
 
-// Helper functions for extracting form values (assumed to be defined elsewhere)
+// Helper functions for extracting form values
 func getStringFormValue(c echo.Context, key string) string {
 	return c.FormValue(key)
 }

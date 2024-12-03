@@ -1,6 +1,9 @@
 package database
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/rs/zerolog"
 )
 
@@ -9,24 +12,39 @@ type ColumnInfo struct {
 	Type string
 }
 
-// Query executes a query and delegates to appropriate handler based on query type
-func (db *DB) Query(logger zerolog.Logger, query string, isSelect bool, page, pageSize int) ([]map[string]interface{}, []ColumnInfo, int, error) {
+// Query executes a query and delegates to the appropriate handler based on query type and driver
+func (db *DB) Query(logger zerolog.Logger, driverName, query string, isSelect bool, page, pageSize int) ([]map[string]interface{}, []ColumnInfo, int, error) {
 	if isSelect {
-		return db.executeSelectQuery(logger, query, page, pageSize)
+		return db.executeSelectQuery(logger, driverName, query, page, pageSize)
 	}
 	return db.executeNonSelectQuery(logger, query)
 }
 
-// executeSelectQuery executes a SELECT query and returns the results
-func (db *DB) executeSelectQuery(logger zerolog.Logger, query string, page, pageSize int) ([]map[string]interface{}, []ColumnInfo, int, error) {
+// executeSelectQuery executes a SELECT query and returns the results, supporting multiple drivers
+func (db *DB) executeSelectQuery(logger zerolog.Logger, driverName, query string, page, pageSize int) ([]map[string]interface{}, []ColumnInfo, int, error) {
 	offset := (page - 1) * pageSize
-	queryString := query + " LIMIT ? OFFSET ?"
-	logger.Debug().Msgf("Executing SELECT query '%s'", queryString)
+
+	// Adjust LIMIT and OFFSET syntax for specific drivers
+	switch strings.ToLower(driverName) {
+	case "mysql", "sqlite", "clickhouse":
+		query += " LIMIT ? OFFSET ?"
+	case "postgres":
+		query += " LIMIT $1 OFFSET $2"
+	case "sqlserver":
+		query = fmt.Sprintf("%s OFFSET ? ROWS FETCH NEXT ? ROWS ONLY", query)
+	case "snowflake":
+		query += " LIMIT ? OFFSET ?"
+	default:
+		logger.Warn().Msgf("Unsupported driver: %s, defaulting to LIMIT/OFFSET syntax", driverName)
+		query += " LIMIT ? OFFSET ?"
+	}
+
+	logger.Debug().Msgf("Executing SELECT query '%s'", query)
 
 	// Execute the query
-	rows, err := db.Conn.Queryx(queryString, pageSize, offset)
+	rows, err := db.Conn.Queryx(query, pageSize, offset)
 	if err != nil {
-		logger.Error().Err(err).Msgf("Error executing SELECT query '%s'", queryString)
+		logger.Error().Err(err).Msgf("Error executing SELECT query '%s'", query)
 		return nil, nil, 0, err
 	}
 	defer rows.Close()
@@ -80,7 +98,7 @@ func (db *DB) executeSelectQuery(logger zerolog.Logger, query string, page, page
 		return nil, nil, 0, err
 	}
 
-	logger.Debug().Msgf("SELECT query '%s' fetched %d rows", queryString, len(results))
+	logger.Debug().Msgf("SELECT query '%s' fetched %d rows", query, len(results))
 	return results, columnInfo, len(results), nil
 }
 

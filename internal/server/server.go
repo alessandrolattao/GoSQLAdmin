@@ -15,8 +15,7 @@ type Server struct {
 }
 
 // NewServer initializes a new Echo server and sets up routes, middleware, and custom logging.
-func NewServer(logger zerolog.Logger, db *database.DB) *Server {
-
+func NewServer(logger zerolog.Logger, db *database.DB, driverName string) *Server {
 	// Create a new Echo instance
 	e := echo.New()
 
@@ -43,8 +42,8 @@ func NewServer(logger zerolog.Logger, db *database.DB) *Server {
 	// Set the custom template renderer
 	e.Renderer = NewTemplateRenderer(logger)
 
-	// Register routes
-	registerRoutes(e, logger, db)
+	// Register routes with driver support
+	registerRoutes(e, logger, db, driverName)
 
 	return &Server{Echo: e}
 }
@@ -55,10 +54,12 @@ func (s *Server) Start(port string) error {
 	return s.Echo.Start(":" + port)
 }
 
+// getStringFormValue retrieves a string form value or a default if it doesn't exist.
 func getStringFormValue(c echo.Context, name string) string {
 	return c.FormValue(name)
 }
 
+// getIntFormValue retrieves an integer form value or a default if it doesn't exist.
 func getIntFormValue(c echo.Context, name string, defaultValue int) int {
 	value := c.FormValue(name)
 	if value == "" {

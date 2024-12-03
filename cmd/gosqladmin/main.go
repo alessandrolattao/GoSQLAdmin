@@ -60,7 +60,7 @@ func main() {
 	defer db.Conn.Close()
 
 	// Initialize the server with the logger and database connection
-	srv := server.NewServer(log.Logger, db)
+	srv := server.NewServer(log.Logger, db, env.SQLDriver)
 	log.Info().Msgf("Starting GoSQLAdmin on http://localhost:%s", port)
 
 	// Start the server and log critical errors if any

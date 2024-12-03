@@ -8,8 +8,8 @@ import (
 	"github.com/rs/zerolog"
 )
 
-// TablesHandler returns an echo.HandlerFunc with injected logger and database dependencies.
-func TablesHandler(logger zerolog.Logger, db *database.DB) echo.HandlerFunc {
+// TablesHandler returns an echo.HandlerFunc with injected logger, database dependencies, and driver name.
+func TablesHandler(logger zerolog.Logger, db *database.DB, driverName string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Extract the selected database from the form
 		selectedDatabase := c.FormValue("selectedDatabase")
@@ -21,7 +21,7 @@ func TablesHandler(logger zerolog.Logger, db *database.DB) echo.HandlerFunc {
 		}
 
 		// Fetch tables for the selected database
-		tableItems, err := db.ListTables(logger, selectedDatabase)
+		tableItems, err := db.ListTables(logger, driverName, selectedDatabase)
 		if err != nil {
 			logger.Error().Err(err).Msg("Error fetching list of tables")
 			return c.JSON(http.StatusInternalServerError, map[string]string{

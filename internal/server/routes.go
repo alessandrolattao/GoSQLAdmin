@@ -7,15 +7,14 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func registerRoutes(e *echo.Echo, logger zerolog.Logger, db *database.DB) {
-
+func registerRoutes(e *echo.Echo, logger zerolog.Logger, db *database.DB, driverName string) {
 	// Define routes
 	e.GET("/", handlers.HomeHandler)
 	e.POST("/dashboard", handlers.DashboardHandler)
-	e.POST("/databases", handlers.DatabasesHandler(logger, db))
-	e.POST("/tables", handlers.TablesHandler(logger, db))
+	e.POST("/databases", handlers.DatabasesHandler(logger, db, driverName))
+	e.POST("/tables", handlers.TablesHandler(logger, db, driverName))
 	e.POST("/table/:databasename/:tablename", handlers.TableHandler())
-	e.POST("/query/:databasename", handlers.QueryHandler(logger, db))
+	e.POST("/query/:databasename", handlers.QueryHandler(logger, db, driverName))
 
 	// Serve static files from the "web/static" directory
 	e.Static("/static", "web/static")

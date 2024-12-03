@@ -8,13 +8,13 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func DatabasesHandler(logger zerolog.Logger, db *database.DB) echo.HandlerFunc {
+func DatabasesHandler(logger zerolog.Logger, db *database.DB, driverName string) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// Array of database items
-		databaseItems, err := db.ListDatabases(logger)
+		// Fetch list of databases based on the driver
+		databaseItems, err := db.ListDatabases(logger, driverName)
 		if err != nil {
-			logger.Error().Err(err).Msg("Error fetching list of databases")
-			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+			logger.Error().Err(err).Msgf("Error fetching list of databases for driver: %s", driverName)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Unable to fetch databases")
 		}
 
 		// Render the template with data
