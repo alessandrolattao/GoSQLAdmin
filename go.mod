@@ -1,4 +1,4 @@
-module github.com/alessandrolattao/gomyadmin
+module github.com/alessandrolattao/gosqladmin
 
 go 1.23.2
 

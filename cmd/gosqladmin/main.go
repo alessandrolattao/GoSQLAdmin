@@ -4,9 +4,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/alessandrolattao/gomyadmin/internal/database"
-	"github.com/alessandrolattao/gomyadmin/internal/environment"
-	"github.com/alessandrolattao/gomyadmin/internal/server"
+	"github.com/alessandrolattao/gosqladmin/internal/database"
+	"github.com/alessandrolattao/gosqladmin/internal/environment"
+	"github.com/alessandrolattao/gosqladmin/internal/server"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -61,7 +61,7 @@ func main() {
 
 	// Initialize the server with the logger and database connection
 	srv := server.NewServer(log.Logger, db)
-	log.Info().Msgf("Starting GoMyAdmin on http://localhost:%s", port)
+	log.Info().Msgf("Starting GoSQLAdmin on http://localhost:%s", port)
 
 	// Start the server and log critical errors if any
 	if err := srv.Start(port); err != nil {

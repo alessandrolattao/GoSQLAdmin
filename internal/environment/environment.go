@@ -10,16 +10,16 @@ import (
 )
 
 type Environment struct {
-	MySQLUser         string
-	MySQLPassword     string
-	MySQLHost         string
-	MySQLPort         string
-	MySQLConnTimeout  time.Duration
-	MySQLReadTimeout  time.Duration
-	MySQLWriteTimeout time.Duration
-	MaxOpenConns      int
-	MaxIdleConns      int
-	ConnMaxLifetime   time.Duration
+	SQLUser         string
+	SQLPassword     string
+	SQLHost         string
+	SQLPort         string
+	SQLConnTimeout  time.Duration
+	SQLReadTimeout  time.Duration
+	SQLWriteTimeout time.Duration
+	MaxOpenConns    int
+	MaxIdleConns    int
+	ConnMaxLifetime time.Duration
 }
 
 // getEnvOrError fetches an environment variable and returns an error if it is not set
@@ -72,31 +72,31 @@ func GetEnvironment(logger zerolog.Logger) (*Environment, error) {
 
 	var err error
 	// Fetch and validate required environment variables
-	if env.MySQLUser, err = getEnvOrError("MYSQL_USER"); err != nil {
+	if env.SQLUser, err = getEnvOrError("SQL_USER"); err != nil {
 		return nil, err
 	}
-	if env.MySQLPassword, err = getEnvOrError("MYSQL_PASSWORD"); err != nil {
+	if env.SQLPassword, err = getEnvOrError("SQL_PASSWORD"); err != nil {
 		return nil, err
 	}
-	if env.MySQLHost, err = getEnvOrError("MYSQL_HOST"); err != nil {
+	if env.SQLHost, err = getEnvOrError("SQL_HOST"); err != nil {
 		return nil, err
 	}
 
 	// Fetch and validate optional environment variables with defaults
-	env.MySQLPort = getEnvOrDefault("MYSQL_PORT", "3306")
-	env.MySQLConnTimeout = parseDurationEnvOrDefault("MYSQL_CONN_TIMEOUT", 60*time.Second)
-	env.MySQLReadTimeout = parseDurationEnvOrDefault("MYSQL_READ_TIMEOUT", 30*time.Minute)
-	env.MySQLWriteTimeout = parseDurationEnvOrDefault("MYSQL_WRITE_TIMEOUT", 30*time.Minute)
+	env.SQLPort = getEnvOrDefault("SQL_PORT", "3306")
+	env.SQLConnTimeout = parseDurationEnvOrDefault("SQL_CONN_TIMEOUT", 60*time.Second)
+	env.SQLReadTimeout = parseDurationEnvOrDefault("SQL_READ_TIMEOUT", 30*time.Minute)
+	env.SQLWriteTimeout = parseDurationEnvOrDefault("SQL_WRITE_TIMEOUT", 30*time.Minute)
 
 	// Fetch and validate connection pool settings
-	env.MaxOpenConns = parseEnvOrDefault("MYSQL_MAX_OPEN_CONNS", 5)
-	env.MaxIdleConns = parseEnvOrDefault("MYSQL_MAX_IDLE_CONNS", 5)
-	env.ConnMaxLifetime = parseDurationEnvOrDefault("MYSQL_CONN_MAX_LIFETIME", 30*time.Minute)
+	env.MaxOpenConns = parseEnvOrDefault("SQL_MAX_OPEN_CONNS", 5)
+	env.MaxIdleConns = parseEnvOrDefault("SQL_MAX_IDLE_CONNS", 5)
+	env.ConnMaxLifetime = parseDurationEnvOrDefault("SQL_CONN_MAX_LIFETIME", 30*time.Minute)
 
 	logger.Debug().
-		Str("mysql_user", env.MySQLUser).
-		Str("mysql_host", env.MySQLHost).
-		Str("mysql_port", env.MySQLPort).
+		Str("sql_user", env.SQLUser).
+		Str("sql_host", env.SQLHost).
+		Str("sql_port", env.SQLPort).
 		Int("max_open_conns", env.MaxOpenConns).
 		Int("max_idle_conns", env.MaxIdleConns).
 		Dur("conn_max_lifetime", env.ConnMaxLifetime).

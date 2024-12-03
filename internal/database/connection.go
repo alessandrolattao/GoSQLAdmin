@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/alessandrolattao/gomyadmin/internal/environment"
+	"github.com/alessandrolattao/gosqladmin/internal/environment"
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
 
@@ -20,13 +20,13 @@ func NewConnection(logger zerolog.Logger, env *environment.Environment) (*DB, er
 	// Construct DSN
 	var dsn string
 	dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/?timeout=%s&readTimeout=%s&writeTimeout=%s",
-		env.MySQLUser,
-		env.MySQLPassword,
-		env.MySQLHost,
-		env.MySQLPort,
-		env.MySQLConnTimeout.String(),  // Convert time.Duration to string
-		env.MySQLReadTimeout.String(),  // Convert time.Duration to string
-		env.MySQLWriteTimeout.String(), // Convert time.Duration to string
+		env.SQLUser,
+		env.SQLPassword,
+		env.SQLHost,
+		env.SQLPort,
+		env.SQLConnTimeout.String(),  // Convert time.Duration to string
+		env.SQLReadTimeout.String(),  // Convert time.Duration to string
+		env.SQLWriteTimeout.String(), // Convert time.Duration to string
 	)
 
 	logger.Info().Msg("Connecting to the database")

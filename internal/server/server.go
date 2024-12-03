@@ -3,7 +3,7 @@ package server
 import (
 	"strconv"
 
-	"github.com/alessandrolattao/gomyadmin/internal/database"
+	"github.com/alessandrolattao/gosqladmin/internal/database"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"

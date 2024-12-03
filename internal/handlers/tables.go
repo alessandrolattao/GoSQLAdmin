@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/alessandrolattao/gomyadmin/internal/database"
+	"github.com/alessandrolattao/gosqladmin/internal/database"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )

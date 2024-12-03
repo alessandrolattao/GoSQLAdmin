@@ -1,8 +1,8 @@
 package server
 
 import (
-	"github.com/alessandrolattao/gomyadmin/internal/database"
-	handlers "github.com/alessandrolattao/gomyadmin/internal/handlers"
+	"github.com/alessandrolattao/gosqladmin/internal/database"
+	handlers "github.com/alessandrolattao/gosqladmin/internal/handlers"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 )

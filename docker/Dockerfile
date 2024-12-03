@@ -11,5 +11,5 @@ WORKDIR /app
 EXPOSE 8080
 
 # Set the entrypoint to gow, watching for changes in the application
-CMD ["gow", "-e=go,mod,html,png,css", "run", "cmd/gomyadmin/main.go"]
+CMD ["gow", "-e=go,mod,html,png,css", "run", "cmd/gosqladmin/main.go"]
 
