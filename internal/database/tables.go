@@ -10,6 +10,9 @@ import (
 func (db *DB) ListTables(logger zerolog.Logger, databaseName string) ([]string, error) {
 	logger.Debug().Msgf("Fetching list of tables for database: %s", databaseName)
 
+	// Select the database for the operation
+	db.SelectDatabase(logger, databaseName)
+
 	// Query to list all tables in the specified database
 	query := fmt.Sprintf("SHOW TABLES FROM `%s`", databaseName)
 
