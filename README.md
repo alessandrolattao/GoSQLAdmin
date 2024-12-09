@@ -37,19 +37,19 @@ GoSQLAdmin aims to support the following databases:
 
 | **Variable**           | **Description**                                                                                           | **Type**        | **Default**    |
 |-------------------------|-----------------------------------------------------------------------------------------------------------|-----------------|----------------|
-| `USER`                 | Username for the SQL database.                                                                            | `string`        | -              |
-| `PASSWORD`             | Password for the SQL database.                                                                            | `string`        | -              |
-| `HOST`                 | Hostname or IP address of the SQL server.                                                                | `string`        | -              |
-| `PORT`                 | Port number on which the SQL server is listening.                                                        | `string`        | `3306`         |
-| `DATABASE`             | Name of the initial database to connect to.                                                              | `string`        | -              |
-| `DRIVER`               | The database driver to use (`mysql`, `postgres`, `sqlite`, `sqlserver`, `snowflake`, `clickhouse`).      | `string`        | `mysql`        |
-| `CONN_TIMEOUT`         | Timeout for establishing a connection to the SQL server (in seconds).                                    | `time.Duration` | `10s`          |
-| `READ_TIMEOUT`         | Timeout for reading data from the SQL server (in seconds).                                               | `time.Duration` | `30s`          |
-| `WRITE_TIMEOUT`        | Timeout for writing data to the SQL server (in seconds).                                                 | `time.Duration` | `30s`          |
-| `MAX_OPEN_CONNS`       | Maximum number of open connections to the database.                                                      | `int`           | `100`          |
-| `MAX_IDLE_CONNS`       | Maximum number of idle connections in the connection pool.                                               | `int`           | `10`           |
-| `CONN_MAX_LIFETIME`    | Maximum lifetime of a connection in the pool before being closed (in seconds).                           | `time.Duration` | `300s`         |
-| `SSL_MODE`             | SSL mode for PostgreSQL (e.g., `disable`, `require`).                                                    | `string`        | `disable`      |
+| `SQL_USER`                 | Username for the SQL database.                                                                            | `string`        | -              |
+| `SQL_PASSWORD`             | Password for the SQL database.                                                                            | `string`        | -              |
+| `SQL_HOST`                 | Hostname or IP address of the SQL server.                                                                | `string`        | -              |
+| `SQL_PORT`                 | Port number on which the SQL server is listening.                                                        | `string`        | `3306`         |
+| `SQL_DATABASE`             | Name of the initial database to connect to.                                                              | `string`        | -              |
+| `SQL_DRIVER`               | The database driver to use (`mysql`, `postgres`, `sqlite`, `sqlserver`, `snowflake`, `clickhouse`).      | `string`        | `mysql`        |
+| `SQL_CONN_TIMEOUT`         | Timeout for establishing a connection to the SQL server (in seconds).                                    | `time.Duration` | `10s`          |
+| `SQL_READ_TIMEOUT`         | Timeout for reading data from the SQL server (in seconds).                                               | `time.Duration` | `30s`          |
+| `SQL_WRITE_TIMEOUT`        | Timeout for writing data to the SQL server (in seconds).                                                 | `time.Duration` | `30s`          |
+| `SQL_MAX_OPEN_CONNS`       | Maximum number of open connections to the database.                                                      | `int`           | `100`          |
+| `SQL_MAX_IDLE_CONNS`       | Maximum number of idle connections in the connection pool.                                               | `int`           | `10`           |
+| `SQL_CONN_MAX_LIFETIME`    | Maximum lifetime of a connection in the pool before being closed (in seconds).                           | `time.Duration` | `300s`         |
+| `SQL_SSL_MODE`             | SSL mode for PostgreSQL (e.g., `disable`, `require`).                                                    | `string`        | `disable`      |
 | `SNOWFLAKE_WAREHOUSE`  | Snowflake warehouse name (applicable for Snowflake only).                                                | `string`        | -              |
 | `SNOWFLAKE_SCHEMA`     | Snowflake schema name (applicable for Snowflake only).                                                   | `string`        | -              |
 
@@ -65,19 +65,19 @@ services:
     image: alessandrolattao/gosqladmin
     container_name: gosqladmin
     environment:
-      USER: myuser
-      PASSWORD: mypassword
-      HOST: mydbhost.com
-      PORT: 3306
-      DATABASE: mydatabase
-      DRIVER: mysql
-      CONN_TIMEOUT: 10s
-      READ_TIMEOUT: 30s
-      WRITE_TIMEOUT: 30s
-      MAX_OPEN_CONNS: 100
-      MAX_IDLE_CONNS: 10
-      CONN_MAX_LIFETIME: 300s
-      SSL_MODE: disable
+      SQL_USER: myuser
+      SQL_PASSWORD: mypassword
+      SQL_HOST: mydbhost.com
+      SQL_PORT: 3306
+      SQL_DATABASE: mydatabase
+      SQL_DRIVER: mysql
+      SQL_CONN_TIMEOUT: 10s
+      SQL_READ_TIMEOUT: 30s
+      SQL_WRITE_TIMEOUT: 30s
+      SQL_MAX_OPEN_CONNS: 100
+      SQL_MAX_IDLE_CONNS: 10
+      SQL_CONN_MAX_LIFETIME: 300s
+      SQL_SSL_MODE: disable
     ports:
       - "8080:8080" # Replace 8080 with the correct exposed port if needed
     restart: unless-stopped
