@@ -7,6 +7,14 @@ import (
 	"github.com/alessandrolattao/gosqladmin/internal/environment"
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
+
+	// Import supported drivers
+	_ "github.com/ClickHouse/clickhouse-go" // ClickHouse driver
+	_ "github.com/denisenkom/go-mssqldb"    // SQL Server driver
+	_ "github.com/go-sql-driver/mysql"      // MySQL driver
+	_ "github.com/lib/pq"                   // PostgreSQL driver
+	_ "github.com/mattn/go-sqlite3"         // SQLite driver
+	_ "github.com/snowflakedb/gosnowflake"  // Snowflake driver
 )
 
 // DB wraps the sqlx.DB connection
