@@ -6,8 +6,10 @@
     hx-target="#tables"
     hx-trigger="load,change"
   >
-    > {{range .DatabaseItems}}
-    <option>{{.}}</option>
+    {{range .DatabaseItems}}
+    <option value="{{.}}" {{if eq . $.SelectedDatabase}}selected{{end}}>
+      {{.}}
+    </option>
     {{end}}
   </select>
 </div>

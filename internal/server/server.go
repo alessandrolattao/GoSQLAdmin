@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/alessandrolattao/gosqladmin/internal/database"
+	"github.com/alessandrolattao/gosqladmin/internal/environment"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
@@ -15,7 +16,7 @@ type Server struct {
 }
 
 // NewServer initializes a new Echo server and sets up routes, middleware, and custom logging.
-func NewServer(logger zerolog.Logger, db *database.DB, driverName string) *Server {
+func NewServer(logger zerolog.Logger, db *database.DB, env *environment.Environment) *Server {
 	// Create a new Echo instance
 	e := echo.New()
 
@@ -43,7 +44,7 @@ func NewServer(logger zerolog.Logger, db *database.DB, driverName string) *Serve
 	e.Renderer = NewTemplateRenderer(logger)
 
 	// Register routes with driver support
-	registerRoutes(e, logger, db, driverName)
+	registerRoutes(e, logger, db, env)
 
 	return &Server{Echo: e}
 }
