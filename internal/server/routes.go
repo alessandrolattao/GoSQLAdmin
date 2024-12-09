@@ -16,6 +16,6 @@ func registerRoutes(e *echo.Echo, logger zerolog.Logger, db *database.DB, driver
 	e.POST("/table/:databasename/:tablename", handlers.TableHandler())
 	e.POST("/query/:databasename", handlers.QueryHandler(logger, db, driverName))
 
-	// Serve static files from the "web/static" directory
-	e.Static("/static", "web/static")
+	// Serve static files from the embedded filesystem
+	e.GET("/static/*", StaticFileHandler(logger))
 }

@@ -48,8 +48,8 @@ func NewConnection(logger zerolog.Logger, env *environment.Environment) (*DB, er
 }
 
 func connectWithRetries(logger zerolog.Logger, env *environment.Environment, dsn string) (*sqlx.DB, error) {
-	maxRetries := 10
-	backoff := 3 * time.Second
+	maxRetries := 12
+	backoff := 5
 
 	var db *sqlx.DB
 	var err error
@@ -61,7 +61,7 @@ func connectWithRetries(logger zerolog.Logger, env *environment.Environment, dsn
 		}
 
 		logger.Error().Err(err).Msgf("Connection failed (attempt %d/%d), retrying in %d seconds...", attempts+1, maxRetries, backoff)
-		time.Sleep(backoff)
+		time.Sleep(time.Duration(backoff) * time.Second)
 	}
 
 	return nil, fmt.Errorf("all connection attempts failed: %w", err)
