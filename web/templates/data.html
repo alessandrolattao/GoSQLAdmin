@@ -9,10 +9,10 @@
       </tr>
     </thead>
     <tbody>
-      {{range .Data}}
+      {{range $row := $.Data}}
       <tr>
-        {{range $key, $value := .}}
-        <td>{{ $value }}</td>
+        {{range $col := $.ColumnInfo}}
+        <td>{{ index $row $col.Name}}</td>
         {{end}}
       </tr>
       {{end}}
