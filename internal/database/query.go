@@ -93,11 +93,6 @@ func (db *DB) executeSelectQuery(logger zerolog.Logger, driverName, query string
 		results = append(results, row)
 	}
 
-	if err := rows.Err(); err != nil {
-		logger.Error().Err(err).Msg("Error iterating rows for SELECT query")
-		return nil, nil, 0, err
-	}
-
 	logger.Debug().Msgf("SELECT query '%s' fetched %d rows", query, len(results))
 	return results, columnInfo, len(results), nil
 }
